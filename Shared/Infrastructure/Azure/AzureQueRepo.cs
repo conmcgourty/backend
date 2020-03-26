@@ -17,7 +17,7 @@ namespace Shared.Infrastructure.Azure
     {
         IConfiguration _configuration;
         CloudStorageAccount storageAccount;
-        CloudQueueClient queueClient;
+        CloudQueueClient queueClient; // Add in Random Comment to check repo health
         CloudQueue queueCloud;
 
 
