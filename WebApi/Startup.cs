@@ -11,6 +11,7 @@ using Shared.Models.Azure;
 using System;
 using System.Linq;
 using Shared.Infrastructure.Azure;
+using Microsoft.OpenApi.Models;
 
 namespace WebAPIApplication
 {
@@ -71,6 +72,12 @@ namespace WebAPIApplication
               .Where(x => typeof(IStartUp).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract)
               .ToList();
 
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Lenders API", Version = "v1" });
+            });
+
+            // this sets up the enviroment.
             foreach (var setup in setUps)
             {
                 var onInit = (IStartUp)Activator.CreateInstance(setup, Configuration);
@@ -84,6 +91,13 @@ namespace WebAPIApplication
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseSwagger();
+
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+            });
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();

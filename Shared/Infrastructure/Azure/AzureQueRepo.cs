@@ -15,7 +15,7 @@ namespace Shared.Infrastructure.Azure
 {
     public class AzureQueRepo : IQueueRepo, IStartUp
     {
-        IConfiguration _configuration;
+        readonly IConfiguration _configuration;
         CloudStorageAccount storageAccount;
         CloudQueueClient queueClient; // Add in Random Comment to check repo health
         CloudQueue queueCloud;
@@ -147,15 +147,6 @@ namespace Shared.Infrastructure.Azure
                 azureMessage.PopId = cloudMessage.PopReceipt;
                 
                 iMessagesCollection.Add(azureMessage);
-
-                #region MyRegion
-
-                #endregion
-                // IMessage order = new IMessage();
-                //order = JsonConvert.DeserializeObject<AzureMessageOrder>(cloudMessage.AsString);
-
-                //orders.Add(order);
-                //queueCloud.DeleteMessageAsync(cloudMessage); // Removing message form Order Queue
             }
 
             return iMessagesCollection;
