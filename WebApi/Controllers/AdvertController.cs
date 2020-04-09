@@ -43,7 +43,8 @@ namespace WebAPIApplication.Controllers
         //}
 
         // POST api/<controller>
-        [HttpPost("create")]
+        // [HttpPost("create")]
+        [HttpPost]
         [Authorize]
         public IActionResult Create([FromBody] Shared.Models.DomainModels.AdvertDTO value)
         {

@@ -24,20 +24,20 @@ namespace Shared.Infrastructure.Azure
             _configuration = configuration;
         }
 
-        public IAdvert AddEntity(string payload, string table)
+        public bool AddEntity(object payload, string table, string partitionKey, string rowKey)
         {
-            AdvertDomain advert = new Models.DomainModels.AdvertDomain(JsonConvert.DeserializeObject<AdvertDTO>(payload));
+            Dictionary<string, EntityProperty> flattenedProperties = EntityPropertyConverter.Flatten(payload, null);
+
+            DynamicTableEntity entity = new DynamicTableEntity();
+            entity.PartitionKey = partitionKey;
+            entity.RowKey = rowKey;
+            entity.Properties = flattenedProperties;
 
             storageAccount = CloudStorageAccount.Parse(this._configuration.GetConnectionString("Storage"));
             tableClient = storageAccount.CreateCloudTableClient();
             tableCloud = tableClient.GetTableReference(table);
 
-            advert.PartitionKey = advert.Advert_Category.ToUpper();
-            advert.RowKey = advert.Advert_Title.ToUpper().Trim() + "^" + advert.Advert_Contact + "^" + DateTime.Now.Millisecond.ToString();
-
-            //AzureMessageConfirmation confirmation = new AzureMessageConfirmation(message.AgentID, message.OrderStatus, message.OrderId);
-
-            TableOperation operation = TableOperation.InsertOrReplace(advert);
+            TableOperation operation = TableOperation.InsertOrReplace(entity);           
             
             try
             {
@@ -46,14 +46,14 @@ namespace Shared.Infrastructure.Azure
             catch (Exception ex)
             {
                 Console.WriteLine($"Exception thrown @ {DateTime.Now} : Where: {ex.StackTrace}");
-                throw ex;
-            }
-          
+                return false;
+            }          
 
-            return advert;
+            return true;
 
         }
 
+     
         public void DeleteEntity(string payload, string table)
         {
             throw new NotImplementedException();

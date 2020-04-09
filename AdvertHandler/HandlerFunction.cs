@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Text;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Interfaces;
+using Newtonsoft.Json;
 
 namespace AdvertHandler
 {
@@ -28,8 +29,7 @@ namespace AdvertHandler
 
                     case "Create":
                         CreateAdvert(message); //Added in a cnew comment
-                        break;
-                    
+                        break;                    
                 }
             }
 
@@ -42,9 +42,14 @@ namespace AdvertHandler
 
             try
             {
-                advert = tableRepo.AddEntity(message.Payload, "advert");
+                advert = JsonConvert.DeserializeObject<IAdvert>(message.Payload);
 
-                if (advert != null)
+                string PartionKey = advert.Advert_Category.ToUpper();
+                string RowKey = advert.Advert_Title.ToUpper().Trim() + "^" + advert.Advert_Contact + "^" + DateTime.Now.Millisecond.ToString();
+
+                bool created = tableRepo.AddEntity(advert, "advert", PartionKey, RowKey);
+
+                if (created == true)
                 {
                     var messageRepo = serviceProvider.GetService<IQueueRepo>();
                     messageRepo.DeleteMessage(message, "advert");

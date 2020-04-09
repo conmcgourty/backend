@@ -7,9 +7,7 @@ namespace Shared.Interfaces
 {
     public interface IAdvert 
     {
-        public string PartionKey { get; set; }
-        public string RowKey { get; set; }
-
+      
         public string Advert_ID { get; set; }
         public string Advert_Title { get; set; }
         public string Advert_Desc { get; set; }

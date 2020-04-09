@@ -8,6 +8,8 @@ using Shared.Interfaces.Infrastructure;
 using Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using System;
+using Shared.Interfaces.Models;
+using Shared.Models.DomainModels;
 
 namespace WebAPIApplication.Controllers
 {
@@ -40,9 +42,32 @@ namespace WebAPIApplication.Controllers
         // POST: api/User
         [HttpPost]
         [Authorize]
-        public void Post([FromBody] dynamic user)
+        public IActionResult Post([FromBody] UserDTO user)
         {
+
             Console.WriteLine(user);
+            var message = _provider.GetService<IMessage>();
+            message.Command = Command.Create.ToString();
+            message.Payload = JsonConvert.SerializeObject(user);
+
+            var queue = _provider.GetService<IQueueRepo>();
+
+            try
+            {
+                queue.AddMessage(message, "users");
+
+                return Ok(new
+                {
+                    Message = "New User Created"
+                });
+
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Exception thrown: {ex}");
+                return StatusCode(500);
+            }
+                     
         }
 
         //// PUT: api/User/5

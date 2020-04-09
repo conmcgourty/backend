@@ -4,3 +4,9 @@
 
 *.sqlite
 *.sqlite-journal
+/.vs/backend/v16
+/AdvertHandler/bin/Debug/netcoreapp3.1
+/UserHandler/bin/Debug/netcoreapp3.1
+/UserHandler/obj/Debug/netcoreapp3.1
+/UserHandler/obj/Release/netcoreapp3.1
+/UserHandler/obj
